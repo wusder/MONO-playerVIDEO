@@ -1,0 +1,10 @@
+{
+  "description": "A premium desktop media player for music and video, with customizable playback, subtitles, background sound mixing, and a focused monochrome interface.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

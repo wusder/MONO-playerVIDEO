@@ -1,46 +1,13 @@
-# Mono Player
+# Figma Make and Code Layers files
 
-Ваш Mono Player (React 19 + Vite + Tailwind v4) с настоящим воспроизведением, медиатекой и расширенной кастомизацией. Дизайн (Liquid Glass, монохром, разметка, классы) сохранён; значения по умолчанию совпадают с оригиналом.
+This directory contains scripts, configuration, and generated files that Figma
+Make and Code Layers use to install dependencies, run your app, build previews,
+and publish your site.
 
-## Запуск
+Commit this directory to your repository so Figma Make and Code Layers can reuse
+it the next time this repository is imported and start your preview server right
+away, without setting up the project from scratch.
 
-```bash
-pnpm install
-pnpm dev            # веб-версия, http://localhost:8443
-pnpm build          # production-сборка в dist/
-pnpm typecheck
-```
-
-### Десктоп (Tauri 2)
-Нужны Rust (stable) и [зависимости Tauri](https://tauri.app/start/prerequisites/).
-
-```bash
-pnpm tauri:dev      # окно с нативными диалогами и drag & drop по путям
-pnpm tauri:build    # установщик: Windows (NSIS/MSI), macOS (dmg)
-```
-Установщики без локальной установки Rust: залейте проект в GitHub и запустите workflow **Build installers** (`.github/workflows/build.yml`). Windows и macOS собираются на соответствующих раннерах, артефакты появятся в результатах запуска.
-
-> **Статус Tauri-слоя:** конфигурация, права и `lib.rs` написаны, но **не компилировались и не запускались** — в среде разработки не было Rust. Веб-часть проверена (см. ниже). Первую сборку проверьте сами; icons сгенерированы из 96-px favicon — замените `src-tauri/icons` на свою иконку (`pnpm tauri icon your.png`).
-
-## Что реализовано
-- **Воспроизведение:** один медиаэлемент для музыки, видео и мини-плеера. Play/Pause, Prev/Next, перемотка, громкость, mute, скорость 0.25–2×, shuffle, repeat, очередь (перестановка), fullscreen, Picture-in-Picture, медиаклавиши ОС, горячие клавиши, автоскрытие контрол-бара, запоминание позиции.
-- **Файлы:** Open (Ctrl/⌘ O), Open folder (Ctrl/⌘ ⇧ O), drag & drop файлов и папок, субтитры рядом с видео подхватываются автоматически.
-- **Метаданные:** теги и обложки MP3 (ID3), FLAC, WAV, M4A/ALAC, DSF. Audio Quality и Resolution показывают реальные параметры файла.
-- **Медиатека:** избранное, недавние, плейлисты, сортировка, поиск, фильтры, контекстные меню, состояние «файл потерян» + «Locate…». Хранится в IndexedDB. Удаление из медиатеки не трогает файлы.
-- **Субтитры:** SRT, ASS (теги стрипуются, без стилей), VTT; размер/прозрачность.
-- **Фоновые звуки:** 7 синтезированных (WebAudio) + свои файлы, одновременно с музыкой, баланс.
-- **Moment Translation:** текст из субтитров; перевод — встроенный Translator API браузера или ваш LibreTranslate-совместимый сервис (только с вашего согласия); OCR области кадра — системный TextDetector или Tesseract.js (включается в настройках, данные языка качаются с CDN при первом использовании). Если движка нет — честное сообщение, без подмены результата.
-- **Кастомизация:** темы Dark/Light/Custom (монохром), blur, прозрачность, рамка, блик, тень, глубина, скругления, плотность, размер интерфейса, прозрачность сайдбара, размер обложек, режим мини-плеера, Reduced Motion/Effects; 21 процедурный обой в 7 категориях (включая живые), свои картинки и видео, blur/dimming обоев. Всё сохраняется локально; Reset to Default и Restore all defaults.
-- **Защита паролем:** только солёный PBKDF2-SHA256 (310 000 итераций), блокировка при запуске, автоблокировка, блокировка при сворачивании.
-
-## Ограничения
-- Декодирование делает движок WebView (Chromium/WebView2, WebKit). **DSD** и **ALAC** (кроме macOS/Safari) не воспроизводятся — файлы распознаются и помечаются «NO DECODER». MKV работает только если кодеки поддерживает движок.
-- Переключение аудиодорожек и встроенные дорожки субтитров зависят от движка (в Tauri на Windows включён флаг `AudioVideoTracks`, не проверялось). Полная поддержка — через libmpv (следующий шаг, не реализован).
-- В браузере без File System Access API (Firefox/Safari) файлы после перезапуска нужно найти заново («Locate…»); в Chrome/Edge и Tauri доступ сохраняется (в Chrome может запросить разрешение).
-- Пароль хранится как хеш в localStorage; интеграции с Windows Hello / Touch ID нет.
-- Удалены/заменены нерабочие элементы макета: демо-кнопка «First launch demo» (онбординг показывается при первом запуске, повтор — Settings → Library), строки «Hardware acceleration» и «Default audio quality».
-- Для автотестов есть скрытый хук `window.__mono` (включается `localStorage.setItem('mono.debug','1')`).
-
-## Что проверено
-Автотесты в настоящем Chromium 153 на сгенерированных файлах (MP3 с тегами и обложкой, FLAC 24/96, WAV, ALAC, MP4/H.264, WebM/VP9, MKV, SRT/ASS/VTT, DSF): открытие и воспроизведение MP3/MP4/WebM, перемотка, громкость, скорость, субтитры (SRT/ASS/VTT), drag & drop, импорт папки, плейлисты, очередь, избранное, поиск/сортировка, мини-плеер, микшер (реальный ненулевой сигнал), темы, blur/opacity/radius, обои (пресеты, живые, свой файл), пароль, сохранение настроек и медиатеки после перезагрузки.
-**Не проверялось:** Tauri/Windows/macOS, нативные диалоги, OCR, перевод, PiP в реальном окне, сохранение файловых дескрипторов File System Access.
+To learn more about these files, see
+[Use Git with Figma Make and code layers](https://help.figma.com/hc/en-us/articles/44220165255063-Use-Git-with-Figma-Make-and-code-layers#h_01M5X47F86RN1RW0F8565KZHB8)
+in the Figma Help Center.
