@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json'
+const siteConfiguration = { title: 'Mono Player', language: 'en' }
 
 
 // Vite config — https://vitejs.dev/config/
